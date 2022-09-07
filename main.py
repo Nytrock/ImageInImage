@@ -23,6 +23,7 @@ def main():
 
     original_pixels = original.load()
     original_width, original_height = original.size
+    pixel_image_pixels = image_for_pixel.load()
     pixel_image_width, pixel_image_height = image_for_pixel.size
 
     number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
@@ -70,10 +71,10 @@ def main():
             r_original = visible * original_pixels[x, y][0]
             g_original = visible * original_pixels[x, y][1]
             b_original = visible * original_pixels[x, y][2]
-            for pixelX in range(original_width):
-                for pixelY in range(original_height):
-                    pixel = original_pixels[pixelX, pixelY]
-                    pixels[pixelX + original_width * x, pixelY + original_height * y] = (
+            for pixelX in range(pixel_image_width):
+                for pixelY in range(pixel_image_height):
+                    pixel = pixel_image_pixels[pixelX, pixelY]
+                    pixels[pixelX + pixel_image_width * x, pixelY + pixel_image_height * y] = (
                         int(pixel[0] * negative_visible + r_original), int(pixel[1] * negative_visible + g_original),
                         int(pixel[2] * negative_visible + b_original))
     write_to_console("Сохранение изображения...")
