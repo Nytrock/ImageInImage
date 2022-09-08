@@ -5,20 +5,20 @@ Image.MAX_IMAGE_PIXELS = None
 
 
 def main():
-    write_to_console("Подготовка к работе...")
+    write_to_console("Preparing for work...")
 
     try:
         original = Image.open("source.jpg")
     except FileNotFoundError:
         write_to_console(
-            "Файл 'source.jpg' не обнаружен. Проверьте его наличие в папке с программой и запустите её снова.")
+            "The file 'source.jpg' was not found. Check for its presence in the folder with the program and run it again.")
         return
 
     try:
         image_for_pixel = Image.open("pixel.jpg")
     except FileNotFoundError:
         write_to_console(
-            "Файл 'pixel.jpg' не обнаружен. Проверьте его наличие в папке с программой и запустите её снова.")
+            "The file 'pixel.jpg' was not found. Check for its presence in the folder with the program and run it again.")
         return
 
     original_pixels = original.load()
@@ -28,23 +28,23 @@ def main():
 
     number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
     if number_of_pixels >= 10 ** 13:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "Это, скорее всего, сожжёт ваш компьютер."):
-            write_to_console("Операция прервана.")
+        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "This will most likely burn your computer."):
+            write_to_console("Operation aborted.")
             return
     elif number_of_pixels >= 10 ** 10:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "Это займёт гигантское количество времени."):
-            write_to_console("Операция прервана.")
+        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "This will most likely burn your computer."):
+            write_to_console("Operation aborted.")
             return
     elif number_of_pixels >= 10 ** 7:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "Это займёт большое количество времени."):
-            write_to_console("Операция прервана.")
+        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height, "This will take a large amount of time."):
+            write_to_console("Operation aborted.")
             return
 
-    write_to_console("Введите желаемое название конечного изображения: ")
+    write_to_console("Enter the desired title for the final image: ")
     name_result = input()
 
-    write_to_console("Введите степень 'видимости' основного изображения. При 0 изображения не будет видно, а при 1 "
-                     "изображение просто увеличится в несколько раз. Стандартным и самым оптимальным является значение 0.5.", True)
+    write_to_console("Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
+                      "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.", True)
 
     while True:
         try:
@@ -54,19 +54,19 @@ def main():
             pass
     negative_visible = 1 - visible
 
-    write_to_console("Создание изображения нужных размеров...")
+    write_to_console("Creating an Image of the Right Size...")
     result = Image.new('RGB', (1, 1), color='red')
     try:
         result = Image.new('RGB', (original_width * pixel_image_width, original_height * pixel_image_height), color='red')
     except MemoryError:
-        write_to_console("Создаваемое изображение является СЛИШКОМ большим. Уменьшите разрешения "
-                         "изображений 'pixel.jpg' и 'source.jpg' и попробуйте сначала.")
+        write_to_console("The generated image is TOO large. Lower the resolution"
+                          "images 'pixel.jpg' and 'source.jpg' and try again.")
     pixels = result.load()
     loading_final = (original_width - 1) / 100
 
     for x in range(original_width):
         loading = round(x / loading_final, 3)
-        write_to_console(f"Обработка - {loading}%")
+        write_to_console(f"Processing - {loading}%")
         for y in range(original_height):
             r_original = visible * original_pixels[x, y][0]
             g_original = visible * original_pixels[x, y][1]
@@ -77,9 +77,9 @@ def main():
                     pixels[pixelX + pixel_image_width * x, pixelY + pixel_image_height * y] = (
                         int(pixel[0] * negative_visible + r_original), int(pixel[1] * negative_visible + g_original),
                         int(pixel[2] * negative_visible + b_original))
-    write_to_console("Сохранение изображения...")
+    write_to_console("Saving an image...")
     result.save(f"{name_result}.jpg")
-    write_to_console("Изображение сохранено.")
+    write_to_console("Image saved.")
 
 
 def write_to_console(text, end=False):
@@ -93,7 +93,7 @@ def write_to_console(text, end=False):
 def confirm_working(sizeX, sizeY, text):
     os.system('cls')
     print(
-        f"Будет создано изображение размером {sizeX}x{sizeY}. {text} Продолжить? (n/y)")
+        f"An image of size {sizeX}x{sizeY} will be created. {text} Continue? (n/y)")
     while True:
         answer = input()
         if answer == "n":
@@ -101,7 +101,7 @@ def confirm_working(sizeX, sizeY, text):
         elif answer == "y":
             return True
         else:
-            print("Введите корректный ответ (n - нет, y - да)")
+            print("Enter the correct answer (n - no, y - yes)")
 
 
 if __name__ == '__main__':
