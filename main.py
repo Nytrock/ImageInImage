@@ -31,18 +31,21 @@ def main():
     # Checking the size of the final image and confirming the start of its creation
     number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
     if number_of_pixels >= 10 ** 13:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height,
-                               "This will most likely burn your computer."):
+        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
+                               f"{original_height * pixel_image_height} will be created. "
+                               f"This will most likely burn your computer."):
             write_to_console("Operation aborted.")
             return
     elif number_of_pixels >= 10 ** 10:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height,
-                               "This will most likely burn your computer."):
+        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
+                               f"{original_height * pixel_image_height} will be created. "
+                               f"This will take a gigantic amount of time."):
             write_to_console("Operation aborted.")
             return
     elif number_of_pixels >= 10 ** 7:
-        if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height,
-                               "This will take a large amount of time."):
+        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
+                               f"{original_height * pixel_image_height} will be created. "
+                               f"This will take a large amount of time."):
             write_to_console("Operation aborted.")
             return
 
@@ -53,14 +56,38 @@ def main():
     write_to_console(
         "Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
         "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.", True)
-
     while True:
         try:
             visible = float(input())
-            break
+            # Getting the degree of visibility of the main image
+            if not 0 <= visible <= 1:
+                text = "less than 0."
+                if visible > 1:
+                    text = "greater than 1."
+                if confirm_working(f"You have chosen a value {text} "
+                                   "This can greatly distort the final image and lead to unexpected results."):
+                    break
+                else:
+                    write_to_console(
+                        "Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
+                        "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.",
+                        True)
+            else:
+                break
         except ValueError:
-            pass
+            print("Enter the correct answer (real number preferably between 0 and 1)")
     negative_visible = 1 - visible
+
+    # Cut the canvas (if necessary)
+    if pixel_image_width != pixel_image_height:
+        if not confirm_working("The image that will replace the pixels is not square, so it will be automatically cropped around the center."):
+            write_to_console("Operation aborted.")
+            return
+        else:
+            image_for_pixel = crop_center(image_for_pixel, min(pixel_image_width, pixel_image_height),
+                                          min(pixel_image_width, pixel_image_height))
+            pixel_image_pixels = image_for_pixel.load()
+            pixel_image_width, pixel_image_height = image_for_pixel.size
 
     # Creating a Canvas
     write_to_console("Creating an Image of the Right Size...")
@@ -94,7 +121,7 @@ def main():
 
 
 # Write something to the console
-def write_to_console(text, end=False):
+def write_to_console(text: str, end=False) -> None:
     os.system('cls')
     if end:
         print(text)
@@ -103,10 +130,10 @@ def write_to_console(text, end=False):
 
 
 # Confirmation of any action
-def confirm_working(sizeX, sizeY, text):
+def confirm_working(text: str) -> bool:
     os.system('cls')
     print(
-        f"An image of size {sizeX}x{sizeY} will be created. {text} Continue? (n/y)")
+        f"{text} Continue? (n/y)")
     while True:
         answer = input()
         if answer == "n":
@@ -115,6 +142,15 @@ def confirm_working(sizeX, sizeY, text):
             return True
         else:
             print("Enter the correct answer (n - no, y - yes)")
+
+
+# Function for cropping the image in the center
+def crop_center(pil_img: Image, crop_width: int, crop_height: int) -> Image:
+    img_width, img_height = pil_img.size
+    return pil_img.crop(((img_width - crop_width) // 2,
+                         (img_height - crop_height) // 2,
+                         (img_width + crop_width) // 2,
+                         (img_height + crop_height) // 2))
 
 
 # Start
