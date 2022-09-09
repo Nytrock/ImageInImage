@@ -7,7 +7,7 @@ Image.MAX_IMAGE_PIXELS = None
 def main():
     write_to_console("Preparing for work...")
 
-    # Попытка открыть файлы изображений, иначе - ошибка
+    # Attempt to open image files, otherwise - error
     try:
         original = Image.open("source.jpg")
     except FileNotFoundError:
@@ -22,13 +22,13 @@ def main():
             "The file 'pixel.jpg' was not found. Check for its presence in the folder with the program and run it again.")
         return
 
-    # Загрузка списков пикселей изображений
+    # Loading image pixel lists
     original_pixels = original.load()
     original_width, original_height = original.size
     pixel_image_pixels = image_for_pixel.load()
     pixel_image_width, pixel_image_height = image_for_pixel.size
 
-    # Проверка размера итогового изображения и подтверждение старта его создания.
+    # Checking the size of the final image and confirming the start of its creation
     number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
     if number_of_pixels >= 10 ** 13:
         if not confirm_working(original_width * pixel_image_width, original_height * pixel_image_height,
@@ -49,7 +49,7 @@ def main():
     write_to_console("Enter the desired title for the final image: ")
     name_result = input()
 
-    # Получение степени видимости главного изображения
+    # Getting the degree of visibility of the main image
     write_to_console(
         "Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
         "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.", True)
@@ -62,7 +62,7 @@ def main():
             pass
     negative_visible = 1 - visible
 
-    # Создание холста
+    # Creating a Canvas
     write_to_console("Creating an Image of the Right Size...")
     result = Image.new('RGB', (1, 1), color='red')
     try:
@@ -74,7 +74,7 @@ def main():
     pixels = result.load()
     loading_final = (original_width - 1) / 100
 
-    # Заполнение холста
+    # Filling the Canvas
     for x in range(original_width):
         loading = round(x / loading_final, 3)
         write_to_console(f"Processing - {loading}%")
@@ -93,7 +93,7 @@ def main():
     write_to_console("Image saved.")
 
 
-# Написать что-то в консоль
+# Write something to the console
 def write_to_console(text, end=False):
     os.system('cls')
     if end:
@@ -102,7 +102,7 @@ def write_to_console(text, end=False):
         print(text, end='')
 
 
-# Подтверждение какого-либо действия
+# Confirmation of any action
 def confirm_working(sizeX, sizeY, text):
     os.system('cls')
     print(
@@ -117,6 +117,6 @@ def confirm_working(sizeX, sizeY, text):
             print("Enter the correct answer (n - no, y - yes)")
 
 
-# Начало
+# Start
 if __name__ == '__main__':
     main()
