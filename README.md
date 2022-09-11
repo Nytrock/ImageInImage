@@ -6,7 +6,7 @@ Have you ever dreamed of creating an image that will not consist of solid pixels
 then this program is just what you need! The "Image in image" program allows you to turn any picture into a real masterpiece, without affecting the
 original images. At the moment, only the function of creating an image with customizable secondary
 (the one to which the pixels will be "replaced" in the final result) and main (the one that will consist of secondary) images. 
-Also, directly in the program, you can change the visibility of the main image (at 0, the main image will not be visible, at 1 - the secondary image not be visible, and if value is outside the range between 0 and 1 - the result will be unpredictable) and name of final image.
+Also, directly in the program, you can change the visibility of the main image (at 0, the main image will not be visible, at 1 - the secondary image) and name of final image.
 > :exclamation: WARNING :exclamation: Most of the generated images are EXTREMELY heavy and can take a lot of time and computer resources to create. Create large images at your own risk!
 
 # Startup instructions
