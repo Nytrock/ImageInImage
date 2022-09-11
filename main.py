@@ -23,26 +23,24 @@ def main():
         return
 
     # Loading image pixel lists
-    original_pixels = original.load()
     original_width, original_height = original.size
-    pixel_image_pixels = image_for_pixel.load()
     pixel_image_width, pixel_image_height = image_for_pixel.size
 
     # Checking the size of the final image and confirming the start of its creation
     number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
-    if number_of_pixels >= 10 ** 13:
+    if number_of_pixels >= 10 ** 16:
         if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will most likely burn your computer."):
             write_to_console("Operation aborted.")
             return
-    elif number_of_pixels >= 10 ** 10:
+    elif number_of_pixels >= 10 ** 13:
         if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will take a gigantic amount of time."):
             write_to_console("Operation aborted.")
             return
-    elif number_of_pixels >= 10 ** 7:
+    elif number_of_pixels >= 10 ** 10:
         if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will take a large amount of time."):
@@ -80,43 +78,49 @@ def main():
 
     # Cut the canvas (if necessary)
     if pixel_image_width != pixel_image_height:
+        write_to_console("Cropping the secondary image...")
         if not confirm_working("The image that will replace the pixels is not square, so it will be automatically cropped around the center."):
             write_to_console("Operation aborted.")
             return
         else:
             image_for_pixel = crop_center(image_for_pixel, min(pixel_image_width, pixel_image_height),
                                           min(pixel_image_width, pixel_image_height))
-            pixel_image_pixels = image_for_pixel.load()
             pixel_image_width, pixel_image_height = image_for_pixel.size
 
-    # Creating a Canvas
-    write_to_console("Creating an Image of the Right Size...")
-    result = Image.new('RGB', (1, 1), color='red')
-    try:
-        result = Image.new('RGB', (original_width * pixel_image_width, original_height * pixel_image_height),
-                           color='red')
-    except MemoryError:
-        write_to_console("The generated image is TOO large. Lower the resolution"
-                         "images 'pixel.jpg' and 'source.jpg' and try again.")
-    pixels = result.load()
-    loading_final = (original_width - 1) / 100
+    # Change the transparency of the main image
+    write_to_console("Change the transparency of the main image...")
+    original = original.convert("RGBA")
+    data = original.getdata()
+    newData = []
+    for item in data:
+        newData.append(item[:-1] + (int(256 * visible),))
+    original.putdata(newData)
 
-    # Filling the Canvas
+    # Resizing the main image
+    write_to_console("Resizing the main image...")
+    original = original.resize((original_width * pixel_image_width, original_height * pixel_image_height))
+
+    # Change the transparency of the secondary image
+    write_to_console("Change the transparency of the secondary image...")
+    image_for_pixel = image_for_pixel.convert("RGBA")
+    data = image_for_pixel.getdata()
+    newData = []
+    for item in data:
+        newData.append(item[:-1] + (int(256 * negative_visible),))
+    image_for_pixel.putdata(newData)
+
+    # Final image processing
+    loading_final = (original_width - 1) / 100
     for x in range(original_width):
         loading = round(x / loading_final, 3)
         write_to_console(f"Processing - {loading}%")
         for y in range(original_height):
-            r_original = visible * original_pixels[x, y][0]
-            g_original = visible * original_pixels[x, y][1]
-            b_original = visible * original_pixels[x, y][2]
-            for pixelX in range(pixel_image_width):
-                for pixelY in range(pixel_image_height):
-                    pixel = pixel_image_pixels[pixelX, pixelY]
-                    pixels[pixelX + pixel_image_width * x, pixelY + pixel_image_height * y] = (
-                        int(pixel[0] * negative_visible + r_original), int(pixel[1] * negative_visible + g_original),
-                        int(pixel[2] * negative_visible + b_original))
+            original.paste(image_for_pixel, (pixel_image_width * x, pixel_image_height * y), mask=image_for_pixel)
+
+    # Converting image to RGB and sava in .jpg
     write_to_console("Saving an image...")
-    result.save(f"{name_result}.jpg")
+    original = original.convert('RGB')
+    original.save(f"{name_result}.jpg")
     write_to_console("Image saved.")
 
 
