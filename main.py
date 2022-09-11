@@ -57,19 +57,8 @@ def main():
     while True:
         try:
             visible = float(input())
-            # Getting the degree of visibility of the main image
             if not 0 <= visible <= 1:
-                text = "less than 0."
-                if visible > 1:
-                    text = "greater than 1."
-                if confirm_working(f"You have chosen a value {text} "
-                                   "This can greatly distort the final image and lead to unexpected results."):
-                    break
-                else:
-                    write_to_console(
-                        "Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
-                        "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.",
-                        True)
+                print("Enter a real number BETWEEN 0 and 1.")
             else:
                 break
         except ValueError:
