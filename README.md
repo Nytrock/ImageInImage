@@ -1,4 +1,4 @@
-<p align="center"><img src="Logo.jpg" alt="Мона Лиза, состоящая из Мон Лиз"></p>
+<p align="center"><img src="Logo.jpg" alt="Mona Lisa, consisting of Mon Lis"></p>
 <p align="center"><i>An example of how the algorithm works. The image has been artificially compressed for stable display.</i></p>
 
 # Image in image
