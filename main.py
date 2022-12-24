@@ -13,6 +13,7 @@ def main():
     except FileNotFoundError:
         write_to_console(
             "The file 'source.jpg' was not found. Check for its presence in the folder with the program and run it again.")
+        input()
         return
 
     try:
@@ -20,6 +21,7 @@ def main():
     except FileNotFoundError:
         write_to_console(
             "The file 'pixel.jpg' was not found. Check for its presence in the folder with the program and run it again.")
+        input()
         return
 
     # Loading image pixel lists
@@ -33,27 +35,34 @@ def main():
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will most likely burn your computer."):
             write_to_console("Operation aborted.")
+            input()
             return
     elif number_of_pixels >= 10 ** 13:
         if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will take a gigantic amount of time."):
             write_to_console("Operation aborted.")
+            input()
             return
     elif number_of_pixels >= 10 ** 10:
         if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
                                f"{original_height * pixel_image_height} will be created. "
                                f"This will take a large amount of time."):
             write_to_console("Operation aborted.")
+            input()
             return
 
-    write_to_console("Enter the desired title for the final image: ")
+    write_to_console("Enter the desired title for the final image.")
     name_result = input()
+    while name_result == "":
+        print("Enter the correct name.")
+        name_result = input()
+
 
     # Getting the degree of visibility of the main image
     write_to_console(
         "Enter the degree of 'visibility' of the main image. At 0, the image will not be visible, and at 1 "
-        "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.", True)
+        "the image will simply be enlarged by several times. The standard and most optimal value is 0.5.")
     while True:
         try:
             visible = float(input())
@@ -70,6 +79,7 @@ def main():
         write_to_console("Cropping the secondary image...")
         if not confirm_working("The image that will replace the pixels is not square, so it will be automatically cropped around the center."):
             write_to_console("Operation aborted.")
+            input()
             return
         else:
             image_for_pixel = crop_center(image_for_pixel, min(pixel_image_width, pixel_image_height),
@@ -111,20 +121,25 @@ def main():
     original = original.convert('RGB')
     original.save(f"{name_result}.jpg")
     write_to_console("Image saved.")
+    input()
 
 
 # Write something to the console
-def write_to_console(text: str, end=False) -> None:
-    os.system('cls')
-    if end:
-        print(text)
+def write_to_console(text: str) -> None:
+    if os.name == 'nt':
+        x = os.system('cls')
     else:
-        print(text, end='')
+        x = os.system('clear')
+    print(text)
 
 
 # Confirmation of any action
 def confirm_working(text: str) -> bool:
-    os.system('cls')
+    if os.name == 'nt':
+        x = os.system('cls')
+    else:
+        x = os.system('clear')
+
     print(
         f"{text} Continue? (n/y)")
     while True:
