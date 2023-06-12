@@ -183,6 +183,7 @@ def main():
                 images[i] = images[i].resize((int(pixel_image_height / images[i].height * images[i].width),
                                               pixel_image_height))
             images[i] = crop_center(images[i], smallest, smallest)
+            pixel_image_width, pixel_image_height = images[i].size
 
     # Change the transparency of the main image
     write_to_console("Change the transparency of the main image...")
