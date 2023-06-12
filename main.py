@@ -1,3 +1,5 @@
+from math import ceil
+
 from PIL import Image
 import os
 
@@ -28,33 +30,60 @@ def main():
     original_width, original_height = original.size
     pixel_image_width, pixel_image_height = image_for_pixel.size
 
-    # Checking the size of the final image and confirming the start of its creation
-    number_of_pixels = original_width * pixel_image_width * original_height * pixel_image_height
-    if number_of_pixels >= 10 ** 16:
-        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
-                               f"{original_height * pixel_image_height} will be created. "
-                               f"This will most likely burn your computer."):
-            write_to_console("Operation aborted.")
-            input()
-            return
-    elif number_of_pixels >= 10 ** 13:
-        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
-                               f"{original_height * pixel_image_height} will be created. "
-                               f"This will take a gigantic amount of time."):
-            write_to_console("Operation aborted.")
-            input()
-            return
-    elif number_of_pixels >= 10 ** 10:
-        if not confirm_working(f"An image of size {original_width * pixel_image_width}x"
-                               f"{original_height * pixel_image_height} will be created. "
-                               f"This will take a large amount of time."):
-            write_to_console("Operation aborted.")
-            input()
-            return
+    # Checking the size of the final image and changing additional sentence
+    size_message = ""
+    result_width, result_height = original_width * pixel_image_width, original_height * pixel_image_height
+    if result_width * result_height >= 10 ** 16:
+        size_message = "This will most likely burn your computer. "
+    elif result_width * result_height >= 10 ** 13:
+        size_message = "This will take a gigantic amount of time. "
+    elif result_width * result_height >= 10 ** 13:
+        size_message = "This will take a large amount of time. "
+
+    # Writing about sizes and asking if the images need to be reduced
+    if confirm_working(f"Source image size - {original_width}x{original_height}. "
+                       f"Pixel image size - {pixel_image_width}x{pixel_image_height}. "
+                       f"Final image size - {result_width}x{result_height}. " + size_message +
+                       "Do you want to reduce the size of the images (this will not affect the original files)?"):
+        write_to_console("Which image do you want to resize? (s - source, p - pixel)")
+        while True:
+            answer = input()
+            if answer == "s" or answer == "p":
+                break
+            print("Enter the correct answer.")
+
+        # Change scale of chosen image
+        if answer == "s":
+            scale = get_image_scale(original, image_for_pixel, "source")
+            original = original.resize((ceil(original.size[0] / scale), ceil(original.size[1] / scale)))
+            next_question = "pixel"
+            size = str(pixel_image_width) + "x" + str(pixel_image_height)
+        else:
+            scale = get_image_scale(image_for_pixel, original, "pixel")
+            image_for_pixel = image_for_pixel.resize((ceil(image_for_pixel.size[0] / scale),
+                                                      ceil(image_for_pixel.size[1] / scale)))
+            next_question = "source"
+            size = str(original_width) + "x" + str(original_height)
+
+        # Change scale of another image
+        if confirm_working("Do you also want to reduce the size of the " + next_question + " image? His size now - "
+                           + size + f", final image now - {original.size[0] * image_for_pixel.size[0]}x"
+                                    f"{original.size[1] * image_for_pixel.size[1]}."):
+            if answer == "p":
+                scale = get_image_scale(original, image_for_pixel, "source")
+                original = original.resize((ceil(original.size[0] / scale), ceil(original.size[1] / scale)))
+            else:
+                scale = get_image_scale(image_for_pixel, original, "pixel")
+                image_for_pixel = image_for_pixel.resize((ceil(image_for_pixel.size[0] / scale),
+                                                          ceil(image_for_pixel.size[1] / scale)))
+
+        original_width, original_height = original.size
+        pixel_image_width, pixel_image_height = image_for_pixel.size
+
 
     write_to_console("Enter the desired title for the final image.")
     name_result = input()
-    while name_result == "":
+    while name_result in ["", "pixel", "source"]:
         print("Enter the correct name.")
         name_result = input()
 
@@ -77,7 +106,8 @@ def main():
     # Cut the canvas (if necessary)
     if pixel_image_width != pixel_image_height:
         write_to_console("Cropping the secondary image...")
-        if not confirm_working("The image that will replace the pixels is not square, so it will be automatically cropped around the center."):
+        if not confirm_working("The image that will replace the pixels is not square, "
+                               "so it will be automatically cropped around the center. Continue?"):
             write_to_console("Operation aborted.")
             input()
             return
@@ -141,7 +171,7 @@ def confirm_working(text: str) -> bool:
         x = os.system('clear')
 
     print(
-        f"{text} Continue? (n/y)")
+        f"{text} (n/y)")
     while True:
         answer = input()
         if answer == "n":
@@ -159,6 +189,37 @@ def crop_center(pil_img: Image, crop_width: int, crop_height: int) -> Image:
                          (img_height - crop_height) // 2,
                          (img_width + crop_width) // 2,
                          (img_height + crop_height) // 2))
+
+
+# Getting a new image scale
+def get_image_scale(working_image: Image, another_image: Image, image_name: str):
+    width, height = working_image.size
+    another_width, another_height = another_image.size
+    max_scale = min(width, height)
+
+    write_to_console("Enter how many times you want to reduce the size "
+                     f"of the " + image_name + f" image (real number between 1 and {max_scale}). "
+                                                        f"Image size now - {width}x{height}."
+                                                        f" Reducing the size does not affect the original image file. ")
+
+    while True:
+        try:
+            scale = float(input())
+            if 1 <= scale <= max_scale:
+                if confirm_working(f"The new size of the " + image_name +
+                                   f" image is {int(width // scale)}x{int(height // scale)}, new final image size - "
+                                   f"{another_width * int(width // scale)}x{another_height * int(height // scale)}"
+                                   f". It suits you?"):
+                    break
+                else:
+                    write_to_console("Enter how many times you want to reduce the size of the "
+                                     + image_name + f" image (real number between 1 and {max_scale})")
+            else:
+                print(f"Enter a real number BETWEEN 1 and {max_scale}.")
+        except ValueError:
+            print(f"Enter the correct answer (real number between 1 and {max_scale})")
+
+    return scale
 
 
 # Start
