@@ -24,9 +24,9 @@ As mentioned above, the program has 2 modes: in the first, the final image consi
 2. Grid (c). Available only if the number of secondary images is two. Secondary images alternate and eventually form something similar to a chessboard
 3. Selective (s). For each pixel of the main image, the most suitable secondary image in color is selected (because of this, this method is the slowest)
 <p align="center">
-  <img src="Examples of using modes/res1.jpg" heigth=auto width=300px alt="Example of using random method">
-  <img src="Examples of using modes/res2.jpg" heigth=auto width=300px alt="Example of using grid method">
-  <img src="Examples of using modes/res3.jpg" heigth=auto width=300px alt="Example of using selective method">
+  <img src="Examples of using modes/res1.jpg" heigth=auto width=33% alt="Example of using random method">
+  <img src="Examples of using modes/res2.jpg" heigth=auto width=33% alt="Example of using grid method">
+  <img src="Examples of using modes/res3.jpg" heigth=auto width=33% alt="Example of using selective method">
 </p>
 
 <p align="center">
