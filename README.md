@@ -37,7 +37,7 @@ As mentioned above, the program has 2 modes: in the first, the final image consi
 - Clone the repository
 
 ```shell
-git clone https://github.com/Nytrock/Image_In_Image.git
+git clone https://github.com/Nytrock/ImageInImage.git
 ```
 
 - Install dependencies with requirements.txt
