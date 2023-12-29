@@ -1,5 +1,4 @@
-<p align="center"><img src="Logo.jpg" alt="Mona Lisa, consisting of Mona Lisa"></p>
-<p align="center"><i>An example of how the algorithm works. The image has been artificially compressed for stable display.</i></p>
+<p align="center"><img src="Logo.png" alt="Logo" width="256"></p>
 
 # Image in image
 Have you ever dreamed of creating an image that will not consist of solid pixels, but of smaller images? If it is true,
